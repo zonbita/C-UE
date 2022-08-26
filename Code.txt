@@ -1,1 +1,16 @@
 
+	UFUNCTION(BlueprintCallable)
+		bool Trace_Hit(int Far, float Radius, FHitResult &Hit);
+
+
+bool Character::Trace_Hit(int Far, float Radius, FHitResult &Hits)
+{
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1));
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));
+
+	TArray<AActor*> A;
+	bool bHasHit = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), FollowCamera->K2_GetComponentLocation(), FollowCamera->K2_GetComponentLocation() + (FollowCamera->GetForwardVector() * Far), Radius, ObjectTypesArray, false, A, EDrawDebugTrace::None, Hits, true);
+	return bHasHit;
+}

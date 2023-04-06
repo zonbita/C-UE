@@ -62,13 +62,13 @@ void ALOM_AI_Base::Despawn()
 
 void ALOM_AI_Base::SetBehavior()
 {
-	//AAIController* AIPC = Cast<AAIController>(GetController());
-	//if (AIPC)
-	//{
-	//	if (BehaviorTree) {
-	//		AIPC->RunBehaviorTree(BehaviorTree);
-	//	}
-	//}
+	AAIController* AIPC = Cast<AAIController>(GetController());
+	if (AIPC)
+	{
+		if (BehaviorTree) {
+			AIPC->RunBehaviorTree(BehaviorTree);
+		}
+	}
 }
 
 

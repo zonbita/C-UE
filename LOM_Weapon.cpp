@@ -1,17 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "LOM_Weapon.h"
 
 // Sets default values
 ALOM_Weapon::ALOM_Weapon()
 {
 	bReplicates = true;
+	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	Scene->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
+	RootComponent = Scene;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RootComponent = Mesh;
+	Mesh->SetupAttachment(RootComponent);
 
 	// CapsuleComponent initialization
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));

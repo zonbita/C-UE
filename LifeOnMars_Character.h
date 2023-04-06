@@ -1,15 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "LifeOnMars.h"
+#include "LOM_AC_Attribute.h"
 #include "LifeOnMars_Character.generated.h"
+
+
 
 UCLASS()
 class LIFEONMARS_API ALifeOnMars_Character : public ACharacter
 {
+
 	GENERATED_BODY()
 
 protected:
@@ -35,6 +38,8 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseLookUpRate;
+
+
 
 protected:
 
@@ -105,10 +110,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool Trace_Hit(int Far, float Radius, FHitResult &Hit);
 
-	// Fire
-	UPROPERTY(ReplicatedUsing = OnRep_CrossFire, EditAnywhere, BlueprintReadWrite)
-		bool CrossFire;
 
-	UFUNCTION(BlueprintCallable, meta = (Category, OverrideNativeName = "OnRep_CrossFire"))
-		virtual void OnRep_CrossFire();
+	// IncreaseSpeed
+	UPROPERTY(ReplicatedUsing = OnRep_IncreaseSpeed, EditAnywhere, BlueprintReadWrite, Category = "Attributes")
+		float IncreaseSpeed = 0.f;
+
+	UFUNCTION(BlueprintCallable, meta = (Category, OverrideNativeName = "OnRep_IncreaseSpeed"))
+		virtual void OnRep_IncreaseSpeed();
+
+	UFUNCTION(BlueprintCallable)
+		void R_IncreaseSpeed(float value);
+
 };

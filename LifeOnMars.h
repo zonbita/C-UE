@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "Modules/ModuleInterface.h"
 #include "UObject/NoExportTypes.h"
+#include "GameplayTagContainer.h"
+#include "GameplayTagsManager.h"
 #include "LifeOnMars.generated.h"
+
 
 #define SURFACE_SAND SurfaceType1
 #define SURFACE_CONCRETE SurfaceType2
@@ -47,28 +49,12 @@ enum class ECharacterActivity : uint8 {
 	ECrouch = 4	UMETA(DisplayName = "Crouch"),
 	EProne = 5	UMETA(DisplayName = "Prone"),
 	ESlowWalk = 6	UMETA(DisplayName = "SlowWalk"),
-	EFlying = 7	UMETA(DisplayName = "Fly")
+	EFlying = 7	UMETA(DisplayName = "Fly"),
+	EMine1		UMETA(DisplayName = "Mine1"),
+	ESit1		UMETA(DisplayName = "Sit1"),
+	EDrive1 	UMETA(DisplayName = "Drive1")
 };
 
-USTRUCT(BlueprintType)
-struct FNftUserProfile {
-	GENERATED_BODY()
-public:
-	UPROPERTY(BlueprintReadWrite, Category = "NFT")
-		FString Description;
-
-	UPROPERTY(BlueprintReadWrite, Category = "NFT")
-		FString ImageURL;
-
-	UPROPERTY(BlueprintReadWrite, Category = "NFT")
-		FString Name;
-
-	FNftUserProfile() {
-		Description = "";
-		ImageURL = "";
-		Name = "";
-	}
-};
 
 UENUM(BlueprintType)
 enum class EWeather : uint8 {
@@ -107,4 +93,81 @@ enum class EActivity : uint8 {
 	Melee  	    UMETA(DisplayName = "Melee"),
 	OneHand_Right  	    UMETA(DisplayName = "OneHand_Right"),
 	OneHand_Left  	    UMETA(DisplayName = "OneHand_Left"),
+};
+
+USTRUCT(BlueprintType)
+struct FPlayerProfiles {
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, Category = "PlayerProfile")
+		FString Description;
+
+	UPROPERTY(BlueprintReadWrite, Category = "PlayerProfile")
+		FString ImageURL;
+
+	UPROPERTY(BlueprintReadWrite, Category = "PlayerProfile")
+		FString Name;
+
+	UPROPERTY(BlueprintReadWrite, Category = "PlayerProfile")
+		int ID_Skin;
+
+	FPlayerProfiles() {
+		Description = "WOW, thank you for your time. This is very helpful!Have a wonderful day!";
+		ImageURL = "";
+		Name = "Test";
+		ID_Skin = 0;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FVolumeGameSettings {
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, Category = "VolumeGameSettings")
+		float MasterVolume;
+	UPROPERTY(BlueprintReadWrite, Category = "VolumeGameSettings")
+		float MusicVolume;
+	UPROPERTY(BlueprintReadWrite, Category = "VolumeGameSettings")
+		float AmbientVolume;
+	UPROPERTY(BlueprintReadWrite, Category = "VolumeGameSettings")
+		float SFXVolume;
+	UPROPERTY(BlueprintReadWrite, Category = "VolumeGameSettings")
+		float UIVolume;
+
+	FVolumeGameSettings() {
+		MasterVolume = 1;
+		MusicVolume = 1;
+		AmbientVolume = 1;
+		SFXVolume = 1;
+		UIVolume = 0;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FS_Attribute_Character : public FTableRowBase {
+	GENERATED_BODY()
+public:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Name"))
+		FString Name;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Attr"))
+		FGameplayTag Attr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Value"))
+		double Value;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Value_Amplitude"))
+		double Value_Amplitude;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "Value_Up"))
+		double Value_Up;
+
+	FS_Attribute_Character() {
+		Name = "";
+		Attr.GetTagName() = "";
+		Value = 1;
+		Value_Amplitude = 1;
+		Value_Up = 0;
+	}
 };

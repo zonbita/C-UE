@@ -20,6 +20,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	UPROPERTY(VisibleAnywhere)
+		USceneComponent* RootScene;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "StaticMesh")
 		UStaticMeshComponent* Mesh;
 };

@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "LifeOnMars_Character.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
@@ -58,7 +57,7 @@ ALifeOnMars_Character::ALifeOnMars_Character()
 void ALifeOnMars_Character::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called to bind functionality to input
@@ -69,8 +68,8 @@ void ALifeOnMars_Character::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &ALifeOnMars_Character::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ALifeOnMars_Character::MoveRight);
+	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ALifeOnMars_Character::MoveForward);
+	PlayerInputComponent->BindAxis("Move Right / Left", this, &ALifeOnMars_Character::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -136,6 +135,10 @@ void ALifeOnMars_Character::MoveForward(float Value)
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
+
+		if (E_Activity == ECharacterActivity::ERun && Value <= 0.0f) {
+			UpdateActivity(ECharacterActivity::EWalk);
+		}
 	}
 }
 
@@ -151,6 +154,10 @@ void ALifeOnMars_Character::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+
+		if (E_Activity == ECharacterActivity::ERun) {
+			UpdateActivity(ECharacterActivity::EWalk);
+		}
 	}
 }
 
@@ -158,6 +165,8 @@ void ALifeOnMars_Character::Run()
 {
 	if (E_Activity == ECharacterActivity::EWalk) {
 		UpdateActivity(ECharacterActivity::ERun);
+		
+		
 	}
 }
 
@@ -206,15 +215,23 @@ bool ALifeOnMars_Character::Trace_Hit(int Far, float Radius, FHitResult &Hits)
 	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1));
 	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
 	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 
 	TArray<AActor*> A;
-	bool bHasHit = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), FollowCamera->K2_GetComponentLocation(), FollowCamera->K2_GetComponentLocation() + (FollowCamera->GetForwardVector() * Far), Radius, ObjectTypesArray, false, A, EDrawDebugTrace::None, Hits, true);
+	A.Add(GetOwner());
+	bool bHasHit = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), FollowCamera->K2_GetComponentLocation(), FollowCamera->K2_GetComponentLocation() + (FollowCamera->GetForwardVector() * Far), Radius, ObjectTypesArray, true, A, EDrawDebugTrace::None, Hits, true);
 	return bHasHit;
 }
 
-void ALifeOnMars_Character::OnRep_CrossFire()
+void ALifeOnMars_Character::OnRep_IncreaseSpeed()
 {
-	bUseControllerRotationYaw = CrossFire ;
+	
+}
+
+void ALifeOnMars_Character::R_IncreaseSpeed(float value)
+{
+	IncreaseSpeed = value;
+	OnRep_IncreaseSpeed();
 }
 
 void ALifeOnMars_Character::SetSpeed(float speed)
@@ -233,13 +250,13 @@ void ALifeOnMars_Character::UpdateActivity(ECharacterActivity InActivity)
 	case ECharacterActivity::EIdle:
 		break;
 	case ECharacterActivity::EWalk:
-		SetSpeed(DefaultSpeed);
+		SetSpeed(DefaultSpeed + IncreaseSpeed);
 		break;
 	case ECharacterActivity::ERun:
-		SetSpeed(RunSpeed);
+		SetSpeed(RunSpeed + IncreaseSpeed);
 		break;
 	case ECharacterActivity::ECrouch:
-		SetSpeed(DefaultSpeed);
+		SetSpeed(DefaultSpeed + IncreaseSpeed);
 		break;
 	}
 
@@ -261,5 +278,6 @@ void ALifeOnMars_Character::GetLifetimeReplicatedProps(TArray< FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ALifeOnMars_Character, E_Activity);
-	DOREPLIFETIME(ALifeOnMars_Character, CrossFire);
+	DOREPLIFETIME(ALifeOnMars_Character, IncreaseSpeed);
+
 }
